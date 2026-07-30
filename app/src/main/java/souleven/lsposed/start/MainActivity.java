@@ -63,11 +63,19 @@ public class MainActivity extends Activity {
             Process suProcess = Runtime.getRuntime().exec("su");
             OutputStream outputStream = suProcess.getOutputStream();
 
-            String command = sdkVersion >= 29 ?
-                    "am broadcast -a android.telephony.action.SECRET_CODE -d android_secret_code://5776733" :
-                    "am broadcast -a android.provider.Telephony.SECRET_CODE -d android_secret_code://5776733";
+            String action = sdkVersion >= 29 ?
+                    "android.telephony.action.SECRET_CODE" :
+                    "android.provider.Telephony.SECRET_CODE";
 
-            outputStream.write((command + "\n").getBytes());
+            String[] commands = {
+                "am broadcast -a " + action + " -d android_secret_code://5776733",
+                "am broadcast -a " + action + " -d android_secret_code://832867"
+            };
+
+            for (String command : commands) {
+                outputStream.write((command + "\n").getBytes());
+            }
+
             outputStream.flush();
             outputStream.close();
             int result = suProcess.waitFor();
